@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macaron Sudoku</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body data-screen="menu-screen">
+
+  <!-- 桌面端顶栏 -->
+  <header class="topbar">
+    <span class="logo">Macaron Sudoku</span>
+    <nav class="topnav">
+      <a class="active" data-nav="menu">🏠 主页</a>
+      <a data-nav="daily">📅 每日成就</a>
+      <a>🏆 里程碑</a>
+      <a>🛍商店</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="icon-btn">?</span>
+      <span class="icon-btn">⚙</span>
+      <span class="avatar small auth-entry" title="账号">🐰</span>
+    </div>
+  </header>
+
+  <!-- 手机端顶栏 -->
+  <header class="mobile-bar">
+    <span class="logo">🐾 Sudoku Ritual</span>
+    <span class="mobile-bar-right">
+      <span class="avatar small auth-entry">🐰</span>
+      <span class="icon-btn">⚙</span>
+    </span>
+  </header>
+
+  <div class="shell">
+    <!-- 桌面端侧边栏 -->
+    <aside class="sidebar">
+      <div class="avatar big auth-entry">🐰</div>
+      <div class="profile-name" id="profile-name">未登录</div>
+      <div class="profile-level" id="profile-level">点头像登录账号</div>
+      <nav class="side-menu">
+        <a class="active" data-nav="menu">🏠 主页</a>
+        <a data-nav="daily">📅 每日成就</a>
+        <a>🏆 里程碑</a>
+        <a>🛍商店</a>
+      </nav>
+      <button id="btn-play-now" class="btn plum play-now">▶ Play Now</button>
+    </aside>
+
+    <main class="main">
+
+      <!-- 主菜单 -->
+      <div id="menu-screen" class="screen">
+        <div class="hero">
+          <div class="hero-deco">❀ RK</div>
+          <h1 class="hero-title">数独</h1>
+          <div class="hero-sub">THE ZEN OF NUMBERS</div>
+        </div>
+
+        <div class="menu-card">
+          <div class="section-label mode-label">🎮 选择模式</div>
+          <div class="mode-row">
+            <button id="btn-single" class="btn mode-single">👤 单人模式</button>
+            <button id="btn-multi" class="btn mode-multi">👥 对战模式</button>
+          </div>
+
+          <div class="section-label diff-label">☰ 选择难度</div>
+          <div class="diff-grid">
+            <button class="diff-card selected" data-diff="easy">
+              <span class="diff-icon easy">😊</span>
+              <span class="diff-tag easy">简单</span>
+              <span class="diff-en">Easy</span>
+              <span class="diff-desc">Gentle introduction for a relaxed afternoon tea.</span>
+              <span class="diff-stars">★</span>
+            </button>
+            <button class="diff-card" data-diff="medium">
+              <span class="diff-icon medium">🙂</span>
+              <span class="diff-tag medium">中等</span>
+              <span class="diff-en">Medium</span>
+              <span class="diff-desc">A satisfying crunch for the curious mind.</span>
+              <span class="diff-stars">☆☆</span>
+            </button>
+            <button class="diff-card" data-diff="hard">
+              <span class="diff-icon hard">🤔</span>
+              <span class="diff-tag hard">困难</span>
+              <span class="diff-en">Hard</span>
+              <span class="diff-desc">Rich complexity for seasoned flavor seekers.</span>
+              <span class="diff-stars">☆☆☆</span>
+            </button>
+            <button class="diff-card" data-diff="expert">
+              <span class="diff-icon expert">🔥</span>
+              <span class="diff-tag expert">专家</span>
+              <span class="diff-en">Expert</span>
+              <span class="diff-desc">The ultimate test for true pastry masters.</span>
+              <span class="diff-stars">✦</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="streak-bar">
+          <span class="streak-icon">✨</span>
+          <span>Complete your <b>Daily Streak</b> to earn Bunny Coins! (3/5)</span>
+          <span class="streak-actions">
+            <button class="pill-btn">Leaderboard</button>
+            <button class="pill-btn">Statistics</button>
+          </span>
+        </div>
+      </div>
+
+      <!-- 对战大厅 -->
+      <div id="lobby-screen" class="screen hidden">
+        <div class="hero compact">
+          <h1 class="hero-title sm">对战大厅</h1>
+          <div class="hero-sub">BATTLE LOBBY</div>
+        </div>
+        <div class="panel">
+          <input id="player-name" type="text" placeholder="你的昵称" maxlength="12">
+          <button id="btn-create-room" class="btn plum">创建房间</button>
+          <div class="join-row">
+            <input id="room-code-input" type="text" placeholder="房间码" maxlength="4">
+            <button id="btn-join-room" class="btn green">加入</button>
+          </div>
+          <div id="lobby-error" class="error-msg"></div>
+          <button id="btn-lobby-back" class="text-btn">← 返回主菜单</button>
+        </div>
+      </div>
+
+      <!-- 房间等待 -->
+      <div id="room-screen" class="screen hidden">
+        <div class="hero compact">
+          <h1 class="hero-title sm">房间 <span id="room-code-display"></span></h1>
+          <div class="hero-sub">WAITING ROOM</div>
+        </div>
+        <div class="panel">
+          <p class="room-info">难度：<span id="room-difficulty"></span></p>
+          <ul id="room-players"></ul>
+          <button id="btn-start-game" class="btn plum">开始游戏</button>
+          <div id="room-error" class="error-msg"></div>
+          <button id="btn-room-back" class="text-btn">← 离开房间</button>
+        </div>
+      </div>
+
+      <!-- 账号界面 -->
+      <div id="auth-screen" class="screen hidden">
+        <div class="hero compact">
+          <h1 class="hero-title sm">我的账号</h1>
+          <div class="hero-sub">ACCOUNT</div>
+        </div>
+        <div class="panel">
+          <div id="auth-logged-in" class="hidden auth-block">
+            <div class="avatar big">🐰</div>
+            <p class="auth-welcome" id="auth-username-display"></p>
+            <p class="auth-stat" id="auth-total-display"></p>
+            <button id="btn-logout" class="btn plum">退出登录</button>
+          </div>
+          <div id="auth-forms" class="auth-block">
+            <input id="auth-username" type="text" placeholder="用户名" maxlength="20" autocomplete="username">
+            <input id="auth-password" type="password" placeholder="密码" autocomplete="current-password">
+            <button id="btn-login" class="btn plum">登 录</button>
+            <button id="btn-register" class="btn green">注册新账号</button>
+            <div id="auth-error" class="error-msg"></div>
+          </div>
+          <button id="btn-auth-back" class="text-btn">← 返回主菜单</button>
+        </div>
+      </div>
+
+      <!-- 每日成就（日历） -->
+      <div id="daily-screen" class="screen hidden">
+        <div class="hero compact">
+          <h1 class="hero-title sm">每日成就</h1>
+          <div class="hero-sub">DAILY ACHIEVEMENTS</div>
+        </div>
+        <div class="panel calendar-panel">
+          <div class="cal-header">
+            <button id="cal-prev" class="cal-nav">‹</button>
+            <span id="cal-title"></span>
+            <button id="cal-next" class="cal-nav">›</button>
+          </div>
+          <div class="cal-weekdays">
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+          </div>
+          <div id="calendar" class="cal-grid"></div>
+          <div id="daily-hint" class="error-msg"></div>
+          <button id="btn-daily-back" class="text-btn">← 返回主菜单</button>
+        </div>
+      </div>
+
+      <!-- 游戏界面 -->
+      <div id="game-screen" class="screen hidden">
+        <div class="game-header">
+          <span id="game-mode-label" class="game-chip"></span>
+          <span id="timer">00:00</span>
+        </div>
+        <div id="opponents" class="opponents hidden"></div>
+        <div id="board"></div>
+        <div class="numpad">
+          <button class="num-btn" data-num="1">1</button>
+          <button class="num-btn" data-num="2">2</button>
+          <button class="num-btn" data-num="3">3</button>
+          <button class="num-btn" data-num="4">4</button>
+          <button class="num-btn" data-num="5">5</button>
+          <button class="num-btn" data-num="6">6</button>
+          <button class="num-btn" data-num="7">7</button>
+          <button class="num-btn" data-num="8">8</button>
+          <button class="num-btn" data-num="9">9</button>
+          <button class="num-btn erase" data-num="0">✕</button>
+        </div>
+        <div class="game-actions">
+          <button id="btn-check" class="btn plum">检查</button>
+          <button id="btn-quit" class="text-btn">退出游戏</button>
+        </div>
+        <div id="check-message" class="check-message"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- 手机端底部标签栏 -->
+  <nav class="tabbar">
+    <a data-nav="play">🎮<span>Play</span></a>
+    <a>✨<span>Collection</span></a>
+    <a data-nav="daily">📅<span>Daily</span></a>
+    <a class="active" data-nav="menu">🏠<span>Home</span></a>
+  </nav>
+
+  <!-- 结果弹窗 -->
+  <div id="result-overlay" class="overlay hidden">
+    <div class="panel result-card">
+      <h2 id="result-title"></h2>
+      <p id="result-detail"></p>
+      <button id="btn-result-ok" class="btn plum">返回主菜单</button>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+
+</html>
